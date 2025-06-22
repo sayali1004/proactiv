@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>ShadowTrail Fraud Tester</title>
+</head>
+<body>
+<h2>ShadowTrail Real-Time Fraud Simulation</h2>
+<button onclick="simulateFraud()">Simulate Session</button>
+<div id="result" style="margin-top: 20px;"></div>
+
+<script>
+    function simulateFraud() {
+    // Create dummy data
+    const data = {
+        latency_since_last_action: Math.random() * 5,
+        geo_distance_from_last_ip: Math.random() * 500,
+        device_switch_count: Math.floor(Math.random() * 5),
+        session_duration: Math.random() * 1000
+    };
+
+    console.log("Sending session:", data);
+
+    fetch("http://localhost:8000/score_session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(result => {
+        console.log("Scoring result:", result);
+        document.getElementById("result").innerText = 
+        `Risk Score: ${result.risk_score} | Decision: ${result.decision}`;
+    })
+    .catch(err => console.error("Error calling API:", err));
+    }
+
+</script>
+</body>
+</html>
