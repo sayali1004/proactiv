@@ -3,6 +3,7 @@ import requests
 
 st.title("🔍 ShadowTrail Fraud Detection Demo")
 
+
 latency = st.slider("Latency Since Last Action (s)", 0.0, 10.0, 1.2)
 geo_dist = st.slider("Geo Distance from Last IP (km)", 0.0, 1000.0, 50.0)
 device_switch = st.slider("Device Switch Count", 0, 5, 1)

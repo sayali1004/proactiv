@@ -6,33 +6,72 @@
 <body>
 <h2>ShadowTrail Real-Time Fraud Simulation</h2>
 <button onclick="simulateFraud()">Simulate Session</button>
+
+<h2>Enter Session Details</h2>
+
+<form id="session-form">
+    <label>Latency Since Last Action (sec):</label><br>
+    <input type="number" step="0.01" name="latency" required><br><br>
+
+    <label>Geo Distance from Last IP (km):</label><br>
+    <input type="number" step="0.01" name="geo_distance" required><br><br>
+
+    <label>Device Switch Count:</label><br>
+    <input type="number" name="device_switch" required><br><br>
+
+    <label>Session Duration (sec):</label><br>
+    <input type="number" step="0.01" name="duration" required><br><br>
+
+    <button type="submit">Check Transaction</button>
+</form>
+
 <div id="result" style="margin-top: 20px;"></div>
 
 <script>
-    function simulateFraud() {
-    // Create dummy data
+    // Handle manual form submission
+    document.getElementById("session-form").addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
     const data = {
-        latency_since_last_action: Math.random() * 5,
-        geo_distance_from_last_ip: Math.random() * 500,
-        device_switch_count: Math.floor(Math.random() * 5),
-        session_duration: Math.random() * 1000
+        latency_since_last_action: parseFloat(formData.get("latency")),
+        geo_distance_from_last_ip: parseFloat(formData.get("geo_distance")),
+        device_switch_count: parseInt(formData.get("device_switch")),
+        session_duration: parseFloat(formData.get("duration"))
     };
 
-    console.log("Sending session:", data);
+    sendData(data);
+    });
 
-    fetch("http://localhost:8000/score_session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    })
+// Simulate random session
+function simulateFraud() {
+const data = {
+    latency_since_last_action: Math.random() * 5,
+    geo_distance_from_last_ip: Math.random() * 500,
+    device_switch_count: Math.floor(Math.random() * 5),
+    session_duration: Math.random() * 1000 
+    };
+
+    console.log("Sending simulated session:", data);
+    sendData(data);
+}
+
+// Send data to FastAPI
+function sendData(data) {
+fetch("http://localhost:8000/score_session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+})
     .then(res => res.json())
     .then(result => {
-        console.log("Scoring result:", result);
-        document.getElementById("result").innerText = 
-        `Risk Score: ${result.risk_score} | Decision: ${result.decision}`;
+    document.getElementById("result").innerText = 
+    `Risk Score: ${result.risk_score} | Decision: ${result.decision}`;
     })
-    .catch(err => console.error("Error calling API:", err));
-    }
+    .catch(err => {
+        document.getElementById("result").innerText = "Error: " + err;
+    });
+}
 
 </script>
 </body>
